@@ -39,7 +39,7 @@ export default function Home() {
             Just describe your business, and we handle the rest.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-8">
             <Link href="/dashboard">
               <button className="px-8 py-4 bg-white text-black font-bold rounded-full text-lg hover:scale-105 transition-transform shadow-[0_0_40px_-10px_rgba(255,255,255,0.5)] flex items-center gap-2">
                 <Zap className="fill-black" size={20} />

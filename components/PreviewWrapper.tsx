@@ -96,7 +96,8 @@ export default function PreviewWrapper({ children, siteUrl = 'https://lupern.ai/
 
                     {/* Browser Address Bar */}
                     <div className="bg-black/40 backdrop-blur-md px-4 py-3 flex items-center gap-4 border-b border-white/5 shrink-0">
-                        <div className="flex gap-2 group">
+                        {/* Desktop: Traffic Lights */}
+                        <div className="hidden md:flex gap-2 group">
                             <button
                                 onClick={() => router.push('/dashboard')}
                                 className="w-3 h-3 rounded-full bg-red-500/80 hover:bg-red-400 transition-colors flex items-center justify-center group-hover:after:content-['←'] group-hover:after:text-[8px] group-hover:after:text-black/50"
@@ -112,6 +113,13 @@ export default function PreviewWrapper({ children, siteUrl = 'https://lupern.ai/
                                 className="w-3 h-3 rounded-full bg-green-500/80 hover:bg-green-400 transition-colors flex items-center justify-center group-hover:after:content-['⤢'] group-hover:after:text-[8px] group-hover:after:text-black/50"
                                 title="Toggle Fullscreen"
                             />
+                        </div>
+
+                        {/* Mobile: Explicit Icons */}
+                        <div className="flex md:hidden gap-4 text-white/60">
+                            <button onClick={() => router.push('/dashboard')} className="hover:text-white">
+                                <span className="text-xs font-medium">← Dashboard</span>
+                            </button>
                         </div>
                         <div className="flex-1 bg-white/5 rounded-md h-7 mx-4 flex items-center px-3 text-xs text-white/30 font-mono select-none">
                             {siteUrl}

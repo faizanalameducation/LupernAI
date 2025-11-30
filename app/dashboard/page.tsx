@@ -45,13 +45,13 @@ export default function Dashboard() {
     }
 
     return (
-        <div className="min-h-screen p-8 flex items-center justify-center relative">
+        <div className="min-h-screen p-4 md:p-8 flex items-center justify-center relative">
             {/* Back Button */}
             <button
                 onClick={() => router.push('/')}
-                className="absolute top-8 left-8 px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors flex items-center gap-2"
+                className="absolute top-4 left-4 md:top-8 md:left-8 px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors flex items-center gap-2 z-10"
             >
-                ← Back
+                ← <span className="hidden md:inline">Back</span>
             </button>
 
             <GlassCard className="w-full max-w-2xl p-8">
