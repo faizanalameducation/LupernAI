@@ -1,0 +1,2 @@
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS color_theme text DEFAULT 'Blue';
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS mode text DEFAULT 'Dark';
