@@ -32,8 +32,7 @@ export default function Dashboard() {
             const delayPromise = new Promise(resolve => setTimeout(resolve, 20000));
 
             // Wait for both to complete
-            // We cast the result to any to avoid strict type checking issues with the mixed array
-            const [genResult] = await Promise.all([generationPromise, delayPromise]) as [any, any];
+            const [genResult] = await Promise.all([generationPromise, delayPromise]) as [{ success: boolean; projectId?: string; error?: string }, unknown];
 
             if (genResult.success) {
                 router.push(`/preview/${genResult.projectId}`);
