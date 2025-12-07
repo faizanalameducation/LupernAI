@@ -230,12 +230,9 @@ export default function Dashboard() {
                 </form>
             </GlassCard>
 
-            {/* Right Popup Timer */}
+            {/* Centered Popup Timer */}
             {loading && countdown !== null && (
                 <>
-                    {/* Debug Log */}
-                    <div className="hidden">{console.log('Popup Rendered:', { loading, countdown })}</div>
-
                     {/* Overlay */}
                     <div className="fixed inset-0 bg-black/50 z-[9998] backdrop-blur-sm" />
 
