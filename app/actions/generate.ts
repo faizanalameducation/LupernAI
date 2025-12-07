@@ -54,7 +54,7 @@ export async function generateLandingPage(formData: FormData) {
                     content: prompt,
                 },
             ],
-            max_tokens: 500,
+            max_tokens: 300,
             temperature: 0.7,
         });
 
