@@ -11,26 +11,31 @@ export default function Dashboard() {
     const [loading, setLoading] = useState(false);
     const [countdown, setCountdown] = useState<number | null>(null);
 
-    // Timer logic
+    // Timer logic - runs when countdown is set to a number
     useEffect(() => {
-        let interval: NodeJS.Timeout;
-        if (loading && countdown !== null && countdown > 0) {
-            interval = setInterval(() => {
-                setCountdown((prev) => (prev !== null ? prev - 1 : null));
-            }, 1000);
-        }
-        return () => clearInterval(interval);
-    }, [loading, countdown]);
+        if (countdown === null || countdown <= 0) return;
+
+        const timer = setTimeout(() => {
+            setCountdown((prev) => (prev !== null && prev > 0 ? prev - 1 : 0));
+        }, 1000);
+
+        return () => clearTimeout(timer);
+    }, [countdown]);
 
     async function handleSubmit(formData: FormData) {
         setLoading(true);
-        setCountdown(8); // Start countdown from 8 seconds
+        setCountdown(20); // Start countdown from 20 seconds
 
         try {
-            const result = await generateLandingPage(formData);
+            // Start generation and timer delay in parallel
+            const generationPromise = generateLandingPage(formData);
+            const delayPromise = new Promise(resolve => setTimeout(resolve, 20000));
 
-            if (result.success) {
-                router.push(`/preview/${result.projectId}`);
+            // Wait for both to complete
+            const [genResult] = await Promise.all([generationPromise, delayPromise]) as [{ success: boolean; projectId?: string; error?: string }, unknown];
+
+            if (genResult.success) {
+                router.push(`/preview/${genResult.projectId}`);
             } else {
                 alert('Failed to generate landing page. Please try again.');
                 setLoading(false);
@@ -58,7 +63,11 @@ export default function Dashboard() {
                 <h1 className="text-3xl font-bold text-white mb-6 text-center">
                     AI Landing Page Generator
                 </h1>
-                <form action={handleSubmit} className="space-y-6">
+                <form onSubmit={async (e) => {
+                    e.preventDefault();
+                    const formData = new FormData(e.currentTarget);
+                    await handleSubmit(formData);
+                }} className="space-y-6">
                     {/* ... (previous form fields remain unchanged) ... */}
 
                     {/* Note: I'm skipping the middle part of the form for brevity in this replacement, 
@@ -202,11 +211,11 @@ export default function Dashboard() {
                         </div>
                     </div>
 
-                    <div className="flex flex-col md:flex-row items-center gap-4">
+                    <div className="flex flex-col items-center gap-4">
                         <button
                             type="submit"
                             disabled={loading}
-                            className="flex-1 w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold py-4 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center shadow-lg shadow-blue-500/25"
+                            className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold py-4 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center shadow-lg shadow-blue-500/25"
                         >
                             {loading ? (
                                 <>
@@ -217,15 +226,40 @@ export default function Dashboard() {
                                 'Generate Landing Page'
                             )}
                         </button>
-
-                        {loading && countdown !== null && (
-                            <div className="text-sm text-gray-300 animate-pulse whitespace-nowrap bg-white/5 px-4 py-2 rounded-lg border border-white/10">
-                                your landing page will be generated in <span className="font-bold text-blue-400">{countdown} sec</span>
-                            </div>
-                        )}
                     </div>
                 </form>
             </GlassCard>
+
+            {/* Right Popup Timer */}
+            {loading && countdown !== null && (
+                <>
+                    {/* Debug Log */}
+                    <div className="hidden">{console.log('Popup Rendered:', { loading, countdown })}</div>
+
+                    {/* Overlay */}
+                    <div className="fixed inset-0 bg-black/50 z-[9998] backdrop-blur-sm" />
+
+                    <div
+                        className="fixed inset-0 flex items-center justify-center pointer-events-none"
+                        style={{ zIndex: 9999 }}
+                    >
+                        <div className="bg-gradient-to-br from-blue-600/90 to-purple-600/90 backdrop-blur-xl p-6 rounded-2xl shadow-2xl border border-white/20 pointer-events-auto transform transition-all hover:scale-105">
+                            <div className="text-center">
+                                <div className="text-5xl font-bold text-white mb-2">
+                                    {countdown > 0 ? countdown : '✓'}
+                                </div>
+                                <div className="text-sm text-white/80">
+                                    {countdown > 0 ? (
+                                        <>Your landing page will be<br />ready in <span className="font-bold text-white">{countdown}s</span></>
+                                    ) : (
+                                        <span className="text-green-300 font-bold">Finalizing...</span>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </>
+            )}
         </div>
     );
 }
