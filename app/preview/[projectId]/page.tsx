@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: PreviewPageProps): Promise<Me
             title: `${project.content.hero_headline} - Preview`,
             description: project.content.seo_meta_description,
         };
-    } catch (e) {
+    } catch {
         return {
             title: 'Project Not Found',
         };
@@ -69,7 +69,7 @@ export default async function PreviewPage({ params }: PreviewPageProps) {
                 {renderLayout()}
             </PreviewWrapper>
         );
-    } catch (e) {
+    } catch {
         notFound();
     }
 }
