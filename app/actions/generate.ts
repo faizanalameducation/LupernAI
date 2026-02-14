@@ -1,13 +1,9 @@
 'use server';
 
 import { HfInference } from '@huggingface/inference';
-import { createClient } from '@supabase/supabase-js';
+import clientPromise from '@/lib/mongodb';
 
 const hf = new HfInference(process.env.HUGGINGFACE_API_KEY);
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 export async function generateLandingPage(formData: FormData) {
     const businessName = formData.get('businessName') as string;
@@ -79,27 +75,28 @@ export async function generateLandingPage(formData: FormData) {
         const jsonString = cleanText.substring(jsonStart, jsonEnd + 1);
         const content = JSON.parse(jsonString);
 
-        const { data, error } = await supabase
-            .from('projects')
-            .insert([
-                {
-                    business_name: businessName,
-                    industry,
-                    audience,
-                    keywords,
-                    tone,
-                    layout,
-                    color_theme,
-                    mode,
-                    content,
-                },
-            ])
-            .select()
-            .single();
+        const client = await clientPromise;
+        const db = client.db('lupern'); // Using 'lupern' as database name, or it will default to connection string's db
+        const collection = db.collection('projects');
 
-        if (error) throw error;
+        const result = await collection.insertOne({
+            business_name: businessName,
+            industry,
+            audience,
+            keywords,
+            tone,
+            layout,
+            color_theme,
+            mode,
+            content,
+            createdAt: new Date(),
+        });
 
-        return { success: true, projectId: data.id };
+        if (!result.acknowledged) {
+            throw new Error('Failed to insert into MongoDB');
+        }
+
+        return { success: true, projectId: result.insertedId.toString() };
     } catch (error: unknown) {
         console.error('Error generating landing page:', error);
         // Log the full error object to see the API response body
